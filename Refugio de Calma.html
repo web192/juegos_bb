@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psicólogo Virtual - Refugio de Calma</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f3f4f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #79C7D3;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: none;
+        }
+
+        button {
+            background-color: #79C7D3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #56a6b2;
+        }
+
+        .response-section {
+            margin-top: 20px;
+            background-color: #eef6f6;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        .urgent-message {
+            color: red;
+            font-weight: bold;
+        }
+
+        .comfort-message {
+            color: blue;
+        }
+
+        .general-message {
+            color: green;
+        }
+
+        .neutral-message {
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        Psicólogo Virtual - Refugio de Calma
+    </header>
+
+    <div class="container">
+        <div class="input-section">
+            <h2>¿Cómo te sientes hoy?</h2>
+            <textarea id="userInput" placeholder="Escribe tus pensamientos..."></textarea>
+            <button onclick="giveTherapy()">Enviar</button>
+        </div>
+
+        <div id="response" class="response-section">
+            Escribe algo para recibir apoyo.
+        </div>
+    </div>
+
+    <script>
+        // Función para proporcionar apoyo psicológico basado en lo que se escribe
+        function giveTherapy() {
+            const userInput = document.getElementById('userInput').value.toLowerCase();
+            let responseMessage = '';
+
+            // Analizar el contenido de los pensamientos
+            if (userInput.includes('matar') || userInput.includes('suicidio') || userInput.includes('terminar con todo')) {
+                responseMessage = "<span class='urgent-message'>Es muy importante que no te quedes solo/a con estos pensamientos. Busca ayuda profesional de inmediato. Tu vida tiene un valor inmenso y siempre hay esperanza. 💖</span>";
+            } else if (userInput.includes('deprimido') || userInput.includes('triste') || userInput.includes('vacío') || userInput.includes('solo')) {
+                responseMessage = "<span class='comfort-message'>Entiendo que te sientas así, pero recuerda que estos sentimientos son temporales. Hay apoyo disponible, y puedes superar esto. Tómate un respiro y busca ayuda si la necesitas. 🌸</span>";
+            } else if (userInput.includes('ansioso') || userInput.includes('nervioso') || userInput.includes('estresado')) {
+                responseMessage = "<span class='comfort-message'>La ansiedad puede ser abrumadora, pero recuerda que puedes controlarla con respiración profunda. Inhala contando hasta 4, mantén durante 4 segundos y exhala contando hasta 6. Eso te ayudará a sentirte más tranquilo/a. 🌬️</span>";
+            } else if (userInput.includes('feliz') || userInput.includes('contento') || userInput.includes('alegre')) {
+                responseMessage = "<span class='general-message'>¡Qué maravilloso que te sientas así! Disfruta de este momento positivo y sigue cuidando de ti mismo/a. 🌞</span>";
+            } else {
+                responseMessage = "<span class='neutral-message'>Gracias por compartir tus pensamientos. Cada emoción es válida. Si te sientes abrumado/a, recuerda que hay ayuda disponible. No estás solo/a. 💖</span>";
+            }
+
+            // Mostrar el mensaje de respuesta
+            document.getElementById('response').innerHTML = responseMessage;
+        }
+    </script>
+</body>
+</html>

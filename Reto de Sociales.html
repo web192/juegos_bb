@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reto de Sociales</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .hint {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .option:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        #next {
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #next:hover {
+            background-color: #007B8A;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>¡Reto de Sociales!</h1>
+        <div id="question-container">
+            <div class="hint" id="hint-text"></div>
+            <div class="question" id="question-text"></div>
+            <div class="options" id="options-container"></div>
+        </div>
+        <div id="result"></div>
+        <div id="score">Puntaje: 0</div>
+        <button id="next" onclick="nextQuestion()">Siguiente Pregunta</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentQuestionIndex = 0;
+
+        const questions = [
+    { question: "¿Quién fue el primer presidente de El Salvador?", hint: "Este presidente asumió el liderazgo del país en sus primeros días de independencia.", options: ["José María Rodríguez", "Antonio José Cañas", "Francisco Menéndez", "Maximiliano Hernández Martínez"], answer: "José María Rodríguez" },
+    { question: "¿En qué año se firmaron los Acuerdos de Paz en El Salvador?", hint: "Este evento crucial puso fin a más de 12 años de conflicto armado.", options: ["1992", "1989", "1991", "1993"], answer: "1992" },
+    { question: "¿Cuál es la capital de El Salvador?", hint: "Es la ciudad más poblada y el centro político y económico del país.", options: ["San Salvador", "Santa Ana", "La Libertad", "San Miguel"], answer: "San Salvador" },
+    { question: "¿Qué río es el más largo de El Salvador?", hint: "Este río nace en Guatemala y fluye a través del país antes de desembocar en el océano Pacífico.", options: ["Río Lempa", "Río Acelhuate", "Río Paz", "Río Jiboa"], answer: "Río Lempa" },
+    { question: "¿En qué fecha se celebra la independencia de El Salvador?", hint: "Este día marca la independencia de El Salvador y otros países de Centroamérica de la Corona Española.", options: ["15 de septiembre", "1 de mayo", "10 de octubre", "25 de diciembre"], answer: "15 de septiembre" },
+    { question: "¿Quién fue el líder del movimiento campesino en la década de 1930?", hint: "Fue un líder que luchó contra la opresión de los trabajadores rurales y se le conoce por su muerte trágica.", options: ["Farabundo Martí", "José Matías Delgado", "Maximiliano Hernández Martínez", "Rafael Córdova"], answer: "Farabundo Martí" },
+    { question: "¿Cómo se llama el volcán más alto de El Salvador?", hint: "Este volcán se encuentra en la zona sur del país y tiene una altitud de más de 2,300 metros sobre el nivel del mar.", options: ["Volcán Ilamatepeq", "Volcán San Vicente", "Volcán Chaparrastique", "Volcán Izalco"], answer: "Volcán Ilamatepeq" },
+    { question: "¿Qué evento importante ocurrió en 1821 en El Salvador?", hint: "En este año El Salvador y otros países centroamericanos obtuvieron su independencia de España.", options: ["La independencia de España", "La guerra con Honduras", "La firma de los Acuerdos de Paz", "La constitución de 1841"], answer: "La independencia de España" },
+    { question: "¿Qué presidente de El Salvador fue conocido como 'La Bestia'?", hint: "Este presidente implementó una dictadura en los años 30 y 40, y se le recuerda por su régimen represivo.", options: ["Maximiliano Hernández Martínez", "Antonio José Cañas", "José María Rodríguez", "Arturo Araujo"], answer: "Maximiliano Hernández Martínez" },
+    { question: "¿Cuál es la moneda oficial de El Salvador?", hint: "El país adoptó esta moneda en 2001, en un intento de estabilizar la economía.", options: ["Colón salvadoreño", "Dólar estadounidense", "Peso salvadoreño", "Quetzal guatemalteco"], answer: "Dólar estadounidense" },
+    { question: "¿En qué año El Salvador adoptó el dólar estadounidense como moneda oficial?", hint: "Este cambio ocurrió en la primera década del siglo XXI, con el objetivo de mejorar la economía del país.", options: ["2001", "1999", "2000", "1998"], answer: "2001" },
+    { question: "¿Quién fue el primer director de la Policía Nacional Civil de El Salvador?", hint: "Este hombre jugó un papel crucial en la formación de la nueva policía luego de la guerra civil.", options: ["Rodolfo Parker", "Joaquín Villalobos", "David Munguía Payés", "Héctor Silva"], answer: "Rodolfo Parker" },
+    { question: "¿Qué significa la bandera de El Salvador?", hint: "Los colores de la bandera representan la lucha por la independencia y la unión de los países de Centroamérica.", options: ["La guerra civil", "La independencia de España", "La unión centroamericana", "La guerra contra Estados Unidos"], answer: "La unión centroamericana" },
+    { question: "¿Cuál es el nombre de la cadena montañosa que cruza El Salvador?", hint: "Esta cadena montañosa atraviesa todo el país de este a oeste.", options: ["Sierra Madre", "Cordillera Central", "Sierra de Apaneca", "Cordillera Volcánica"], answer: "Cordillera Volcánica" },
+    { question: "¿En qué ciudad se realizó la firma de los Acuerdos de Paz?", hint: "Este lugar es famoso por ser el sitio donde se alcanzó la paz después de la guerra civil.", options: ["San Salvador", "Santiago de María", "Ciudad Delgado", "Chapultepec"], answer: "Chapultepec" },
+    { question: "¿Qué país invadió El Salvador en la guerra de 1969?", hint: "Este conflicto también es conocido como la 'Guerra del Fútbol' debido a su proximidad a un partido de fútbol.", options: ["Honduras", "Nicaragua", "Costa Rica", "Guatemala"], answer: "Honduras" },
+    { question: "¿Qué nombre tiene la fiesta tradicional de El Salvador celebrada en San Salvador?", hint: "Esta fiesta religiosa se celebra en agosto y tiene procesiones, bailes y música.", options: ["Fiestas Agostinas", "Fiestas de la Virgen del Carmen", "Fiestas de la Asunción", "Fiestas Patronales de Santa Ana"], answer: "Fiestas Agostinas" },
+    { question: "¿Qué presidente salvadoreño fue conocido por su política de privatización?", hint: "Este presidente implementó reformas neoliberales durante la década de 1990.", options: ["Carlos Mauricio Funes", "Alfredo Cristiani", "Francisco Flores", "Antonio Saca"], answer: "Francisco Flores" },
+    { question: "¿Qué lugar es conocido como la cuna de la independencia de El Salvador?", hint: "Este municipio es considerado el lugar donde se iniciaron los movimientos independentistas.", options: ["San Vicente", "La Libertad", "Suchitoto", "Metapán"], answer: "Suchitoto" },
+    { question: "¿Qué significa el himno nacional de El Salvador?", hint: "Este himno resalta los valores patrióticos y la lucha por la independencia.", options: ["La libertad y la lucha", "El amor por la patria", "La guerra y la paz", "La unión centroamericana"], answer: "La libertad y la lucha" },
+    { question: "¿Qué deporte es el más popular en El Salvador?", hint: "Este deporte une a la nación, especialmente en los barrios y en las competiciones internacionales.", options: ["Fútbol", "Béisbol", "Baloncesto", "Voleibol"], answer: "Fútbol" },
+    { question: "¿Qué nombre recibe la antigua moneda de El Salvador?", hint: "Antes de adoptar el dólar, El Salvador utilizaba esta moneda local.", options: ["Peso salvadoreño", "Colón salvadoreño", "Guatemala", "Quetzal"], answer: "Colón salvadoreño" },
+    { question: "¿Quién es considerado el prócer de la independencia de El Salvador?", hint: "Este líder es conocido por su participación activa en la lucha por la independencia de Centroamérica.", options: ["José Matías Delgado", "Pedro Pablo Castillo", "José de la Cruz", "Manuel José Arce"], answer: "José Matías Delgado" },
+    { question: "¿Qué ciudad salvadoreña es conocida por su hermosa playa y turismo?", hint: "Este lugar es famoso por ser un destino turístico popular por sus hermosas playas.", options: ["La Libertad", "Santa Ana", "San Miguel", "Ahuachapán"], answer: "La Libertad" }
+];
+
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('hint-text').textContent = question.hint;
+            document.getElementById('question-text').textContent = question.question;
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('option');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestionIndex];
+            const result = document.getElementById('result');
+            if (selectedOption === question.answer) {
+                result.textContent = "¡Correcto! 🎉";
+                result.style.color = 'green';
+                score++;
+                document.getElementById('score').textContent = `Puntaje: ${score}`;
+            } else {
+                result.textContent = "¡Incorrecto! ❌";
+                result.style.color = 'red';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+                document.getElementById('result').textContent = '';
+            } else {
+                document.getElementById('result').textContent = `¡Felicidades! Has terminado el reto. Puntaje final: ${score}`;
+                document.getElementById('next').style.display = 'none';
+            }
+        }
+
+        // Cargar la primera pregunta al cargar la página
+        loadQuestion();
+    </script>
+</body>
+</html>

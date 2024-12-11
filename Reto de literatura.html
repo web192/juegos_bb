@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reto de literatura</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+            border: none;
+        }
+
+        .option:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        #next {
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #next:hover {
+            background-color: #007B8A;
+        }
+
+        #next:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>¡Reto de literatura!</h1>
+        <div id="question-container">
+            <div class="question" id="question-text"></div>
+            <div class="options" id="options-container"></div>
+        </div>
+        <div id="result"></div>
+        <div id="score">Puntaje: 0</div>
+        <button id="next">Siguiente Pregunta</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentQuestionIndex = 0;
+
+        const literatureQuestions = [
+            {
+                question: "¿Quién escribió 'Don Quijote de la Mancha'?",
+                options: ["Miguel de Cervantes", "Gabriel García Márquez", "Pablo Neruda", "Jorge Luis Borges"],
+                answer: "Miguel de Cervantes"
+            },
+            {
+                question: "¿Qué género literario se caracteriza por narrar hechos imaginarios o ficticios?",
+                options: ["Lírico", "Narrativo", "Dramático", "Ensayo"],
+                answer: "Narrativo"
+            },
+            {
+                question: "¿Cuál es el tema principal de la obra 'Romeo y Julieta'?",
+                options: ["Venganza", "Amor", "Ambición", "Traición"],
+                answer: "Amor"
+            },
+            // Agrega más preguntas aquí...
+    {
+        question: "¿Quién escribió 'Don Quijote de la Mancha'?",
+        hint: "Este autor español es considerado uno de los escritores más importantes de la literatura universal.",
+        options: ["Miguel de Cervantes", "Gabriel García Márquez", "Pablo Neruda", "Jorge Luis Borges"],
+        answer: "Miguel de Cervantes"
+    },
+    {
+        question: "¿Qué género literario se caracteriza por narrar hechos imaginarios o ficticios?",
+        hint: "Este género incluye subgéneros como la novela y el cuento.",
+        options: ["Lírico", "Narrativo", "Dramático", "Ensayo"],
+        answer: "Narrativo"
+    },
+    {
+        question: "¿Cuál es el tema principal de la obra 'Romeo y Julieta'?",
+        hint: "Esta obra de William Shakespeare trata sobre un amor prohibido.",
+        options: ["Venganza", "Amor", "Ambición", "Traición"],
+        answer: "Amor"
+    },
+    {
+        question: "¿Qué es una metáfora?",
+        hint: "Es una figura retórica que compara dos conceptos sin usar 'como'.",
+        options: [
+            "Una comparación directa",
+            "Una descripción literal",
+            "Una comparación implícita",
+            "Un juego de palabras"
+        ],
+        answer: "Una comparación implícita"
+    },
+    {
+        question: "¿Quién es el autor de 'Cien años de soledad'?",
+        hint: "Este escritor colombiano ganó el Premio Nobel de Literatura en 1982.",
+        options: ["Julio Cortázar", "Gabriel García Márquez", "Mario Vargas Llosa", "Isabel Allende"],
+        answer: "Gabriel García Márquez"
+    },
+    {
+        question: "¿Qué corriente literaria busca expresar los sentimientos y las emociones del autor?",
+        hint: "Es una corriente predominante en el siglo XIX.",
+        options: ["Realismo", "Romanticismo", "Modernismo", "Clasicismo"],
+        answer: "Romanticismo"
+    },
+    {
+        question: "¿Qué es un soneto?",
+        hint: "Es una composición poética de 14 versos.",
+        options: [
+            "Un poema libre",
+            "Un poema épico",
+            "Un poema de 14 versos",
+            "Un poema sin rima"
+        ],
+        answer: "Un poema de 14 versos"
+    },
+    {
+        question: "¿En qué país nació el poeta Pablo Neruda?",
+        hint: "Este país sudamericano también es famoso por su tradición poética.",
+        options: ["Chile", "Argentina", "Perú", "México"],
+        answer: "Chile"
+    },
+    {
+        question: "¿Qué personaje literario dice la frase 'Ser o no ser, esa es la cuestión'?",
+        hint: "Es un príncipe danés creado por William Shakespeare.",
+        options: ["Hamlet", "Macbeth", "Otelo", "Romeo"],
+        answer: "Hamlet"
+    },
+    {
+        question: "¿Cuál es la estructura típica de un cuento?",
+        hint: "Esta estructura incluye introducción, desarrollo y desenlace.",
+        options: [
+            "Introducción y conclusión",
+            "Introducción, desarrollo y desenlace",
+            "Desenlace y clímax",
+            "Solo el clímax"
+        ],
+        answer: "Introducción, desarrollo y desenlace"
+    },
+    {
+        question: "¿Qué autor escribió 'La Divina Comedia'?",
+        hint: "Este autor italiano vivió durante la Edad Media.",
+        options: ["Dante Alighieri", "Giovanni Boccaccio", "Francesco Petrarca", "Homero"],
+        answer: "Dante Alighieri"
+    },
+    {
+        question: "¿Qué caracteriza al género dramático?",
+        hint: "Es un género diseñado para ser representado en un escenario.",
+        options: ["El uso del diálogo", "La descripción detallada", "La narración en primera persona", "El enfoque en la poesía"],
+        answer: "El uso del diálogo"
+    },
+    {
+        question: "¿Quién escribió 'Orgullo y Prejuicio'?",
+        hint: "Esta escritora inglesa es conocida por sus novelas sobre la sociedad de su época.",
+        options: ["Jane Austen", "Charlotte Brontë", "Virginia Woolf", "Mary Shelley"],
+        answer: "Jane Austen"
+    },
+    {
+        question: "¿Qué es el clímax en una obra literaria?",
+        hint: "Es el momento de mayor tensión en la trama.",
+        options: [
+            "El inicio de la historia",
+            "El desarrollo del personaje principal",
+            "El punto de mayor emoción en la historia",
+            "El desenlace"
+        ],
+        answer: "El punto de mayor emoción en la historia"
+    },
+    {
+        question: "¿Qué novela fue escrita por Mary Shelley y se considera una de las primeras del género de ciencia ficción?",
+        hint: "La obra trata sobre un científico que crea un ser humano artificial.",
+        options: ["Drácula", "Frankenstein", "El extraño caso de Dr. Jekyll y Mr. Hyde", "20.000 leguas de viaje submarino"],
+        answer: "Frankenstein"
+    },
+    {
+        question: "¿Quién es el autor de 'El Principito'?",
+        hint: "Este libro es uno de los más traducidos y fue escrito por un autor francés.",
+        options: [
+            "Antoine de Saint-Exupéry",
+            "Victor Hugo",
+            "Julio Verne",
+            "Albert Camus"
+        ],
+        answer: "Antoine de Saint-Exupéry"
+    },
+    {
+        question: "¿Qué obra de Homero relata el viaje de regreso de Ulises a Ítaca?",
+        hint: "Es una de las epopeyas más antiguas de la literatura occidental.",
+        options: ["La Ilíada", "La Odisea", "Los trabajos y los días", "La Eneida"],
+        answer: "La Odisea"
+    },
+    {
+        question: "¿Qué es un haiku?",
+        hint: "Es una forma de poesía japonesa con una estructura de 5-7-5 sílabas.",
+        options: [
+            "Un poema épico largo",
+            "Un poema de 14 versos",
+            "Un poema corto de origen japonés",
+            "Una narrativa lírica"
+        ],
+        answer: "Un poema corto de origen japonés"
+    },
+    {
+        question: "¿Qué autor escribió 'Crimen y Castigo'?",
+        hint: "Este autor ruso es conocido por explorar la psicología de sus personajes.",
+        options: ["León Tolstói", "Fiódor Dostoyevski", "Antón Chéjov", "Vladimir Nabokov"],
+        answer: "Fiódor Dostoyevski"
+    },
+    {
+        question: "¿Qué es una fábula?",
+        hint: "Es un relato breve que tiene una enseñanza moral.",
+        options: [
+            "Un poema épico",
+            "Una narración con personajes animales que tiene una enseñanza",
+            "Un ensayo filosófico",
+            "Un cuento de hadas"
+        ],
+        answer: "Una narración con personajes animales que tiene una enseñanza"
+    },
+    {
+        question: "¿Quién es el autor de 'La Metamorfosis'?",
+        hint: "Es un autor checo conocido por sus obras llenas de absurdo y alienación.",
+        options: ["Franz Kafka", "Thomas Mann", "Hermann Hesse", "James Joyce"],
+        answer: "Franz Kafka"
+    }
+        ];
+
+        function loadQuestion() {
+            const question = literatureQuestions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('option');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+
+            document.getElementById('result').textContent = '';
+            document.getElementById('next').disabled = true;
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = literatureQuestions[currentQuestionIndex];
+            const result = document.getElementById('result');
+
+            if (selectedOption === question.answer) {
+                result.textContent = "¡Correcto! 🎉";
+                result.style.color = 'green';
+                score++;
+                document.getElementById('score').textContent = `Puntaje: ${score}`;
+            } else {
+                result.textContent = `¡Incorrecto! ❌ La respuesta correcta era: "${question.answer}".`;
+                result.style.color = 'red';
+            }
+
+            document.getElementById('next').disabled = false;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < literatureQuestions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById('question-container').style.display = 'none';
+                document.getElementById('next').style.display = 'none';
+                document.getElementById('result').textContent = `¡Felicidades! Has completado el reto. Puntaje final: ${score}`;
+            }
+        }
+
+        document.getElementById('next').addEventListener('click', nextQuestion);
+
+        // Cargar la primera pregunta
+        loadQuestion();
+    </script>
+</body>
+</html>

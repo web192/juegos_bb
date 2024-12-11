@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Matemáticas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .emoji {
+            font-size: 50px;
+        }
+
+        #problem {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 18px;
+            width: 100px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>¡Resuelve los problemas matemáticos!</h1>
+        <div id="emoji" class="emoji">😃</div>
+        <div id="problem"></div>
+        <input type="number" id="answer" placeholder="Escribe tu respuesta">
+        <button onclick="checkAnswer()">Comprobar</button>
+        <div id="result"></div>
+        <div id="score">Problemas Resueltos: 0</div>
+    </div>
+
+    <script>
+        let currentProblem;
+        let currentAnswer;
+        let score = 0;
+
+        const problems = [];
+
+        // Generar 300 problemas
+        function generateProblems() {
+            for (let i = 0; i < 300; i++) {
+                const num1 = Math.floor(Math.random() * 20) + 1;
+                const num2 = Math.floor(Math.random() * 20) + 1;
+                const operator = Math.random() > 0.5 ? '+' : '-';
+                let answer;
+                let problemText;
+
+                if (operator === '+') {
+                    problemText = `¿Cuánto es ${num1} + ${num2}?`;
+                    answer = num1 + num2;
+                } else {
+                    problemText = `¿Cuánto es ${num1} - ${num2}?`;
+                    answer = num1 - num2;
+                }
+
+                problems.push({ problemText, answer });
+            }
+        }
+
+        // Iniciar juego y cargar el primer problema
+        function startGame() {
+            generateProblems();
+            loadProblem();
+        }
+
+        // Cargar un problema aleatorio
+        function loadProblem() {
+            if (problems.length === 0) {
+                document.getElementById('problem').textContent = "¡Felicidades! Has resuelto todos los problemas.";
+                document.getElementById('result').textContent = "";
+                return;
+            }
+            const randomIndex = Math.floor(Math.random() * problems.length);
+            currentProblem = problems[randomIndex].problemText;
+            currentAnswer = problems[randomIndex].answer;
+            document.getElementById('problem').textContent = currentProblem;
+        }
+
+        // Comprobar respuesta
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const result = document.getElementById('result');
+
+            if (userAnswer === currentAnswer) {
+                result.textContent = '¡Correcto! 🎉';
+                result.style.color = 'green';
+                score++;
+                document.getElementById('score').textContent = `Problemas Resueltos: ${score}`;
+                problems.splice(problems.indexOf(problems.find(p => p.answer === currentAnswer && p.problemText === currentProblem)), 1);
+                loadProblem();
+            } else {
+                result.textContent = 'Intenta de nuevo. ❌';
+                result.style.color = 'red';
+            }
+        }
+
+        // Iniciar el juego al cargar la página
+        startGame();
+    </script>
+</body>
+</html>

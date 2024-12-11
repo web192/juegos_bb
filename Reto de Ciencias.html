@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reto de Ciencias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #game {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            margin-bottom: 20px;
+        }
+
+        .option {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+        }
+
+        .option:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        #next {
+            padding: 10px 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #next:hover {
+            background-color: #007B8A;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>¡Reto de Ciencias!</h1>
+        <div id="question-container">
+            <div class="question" id="question-text"></div>
+            <div class="options" id="options-container"></div>
+        </div>
+        <div id="result"></div>
+        <div id="score">Puntaje: 0</div>
+        <button id="next" onclick="nextQuestion()">Siguiente Pregunta</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentQuestionIndex = 0;
+
+        const questions = [
+    {
+        question: "¿Cuál es la fórmula química del agua?",
+        hint: "Este compuesto es vital para la vida y se encuentra en los océanos, ríos y en el aire en forma de vapor.",
+        options: ["H2O", "CO2", "O2", "NaCl"],
+        answer: "H2O"
+    },
+    {
+        question: "¿Qué es la fotosíntesis?",
+        hint: "Este proceso es realizado por las plantas para producir su alimento utilizando luz solar.",
+        options: ["El proceso de digestión de las plantas", "La formación de frutas", "El proceso de fabricación de oxígeno", "El proceso mediante el cual las plantas producen su alimento"],
+        answer: "El proceso mediante el cual las plantas producen su alimento"
+    },
+    {
+        question: "¿Qué gas es necesario para la respiración de los seres humanos?",
+        hint: "Este gas se encuentra en el aire y es necesario para la respiración celular.",
+        options: ["Nitrógeno", "Oxígeno", "Dióxido de carbono", "Metano"],
+        answer: "Oxígeno"
+    },
+    {
+        question: "¿Qué es la gravedad?",
+        hint: "Este fenómeno hace que los objetos caigan hacia el centro de la Tierra.",
+        options: ["Una fuerza que atrae los objetos hacia el centro de la Tierra", "El calor que genera el sol", "La capacidad de los objetos para moverse", "La presión que ejerce el aire sobre los objetos"],
+        answer: "Una fuerza que atrae los objetos hacia el centro de la Tierra"
+    },
+    {
+        question: "¿Quién propuso la teoría de la relatividad?",
+        hint: "Este científico revolucionó nuestra comprensión del espacio y el tiempo.",
+        options: ["Isaac Newton", "Albert Einstein", "Nikola Tesla", "Galileo Galilei"],
+        answer: "Albert Einstein"
+    },
+    {
+        question: "¿De qué está formada la materia?",
+        hint: "Todo lo que nos rodea está compuesto por estas partículas.",
+        options: ["Átomos", "Células", "Moléculas", "Electrones"],
+        answer: "Átomos"
+    },
+    {
+        question: "¿Cuál es el órgano principal del sistema circulatorio?",
+        hint: "Este órgano bombea la sangre a través de todo el cuerpo.",
+        options: ["El cerebro", "El hígado", "El corazón", "Los pulmones"],
+        answer: "El corazón"
+    },
+    {
+        question: "¿Qué es un ecosistema?",
+        hint: "Es un conjunto de organismos y su entorno en el cual interactúan.",
+        options: ["Una cadena alimenticia", "Un organismo unicelular", "Un área de la Tierra sin vida", "Un sistema formado por organismos vivos y su entorno físico"],
+        answer: "Un sistema formado por organismos vivos y su entorno físico"
+    },
+    {
+        question: "¿Qué tipo de energía produce el sol?",
+        hint: "El sol emite esta forma de energía que es utilizada para producir luz y calor.",
+        options: ["Energía mecánica", "Energía nuclear", "Energía solar", "Energía eléctrica"],
+        answer: "Energía solar"
+    },
+    {
+        question: "¿Qué tipo de reacción ocurre cuando un combustible se quema?",
+        hint: "Este tipo de reacción libera calor y luz.",
+        options: ["Reacción de combustión", "Reacción de disolución", "Reacción de oxidación", "Reacción de neutralización"],
+        answer: "Reacción de combustión"
+    },
+    {
+        question: "¿Cómo se llama el proceso por el cual las plantas obtienen nutrientes del suelo?",
+        hint: "Este proceso es vital para el crecimiento y desarrollo de las plantas.",
+        options: ["Transpiración", "Absorción", "Fotosíntesis", "Respiración"],
+        answer: "Absorción"
+    },
+    {
+        question: "¿Qué es un átomo?",
+        hint: "Es la unidad básica de la materia.",
+        options: ["Un elemento químico", "Una molécula", "Una partícula subatómica", "La unidad básica de la materia"],
+        answer: "La unidad básica de la materia"
+    },
+    {
+        question: "¿Qué elemento forma parte del aire que respiramos?",
+        hint: "Este gas es esencial para la vida y constituye aproximadamente el 21% de la atmósfera.",
+        options: ["Nitrógeno", "Dióxido de carbono", "Oxígeno", "Argón"],
+        answer: "Oxígeno"
+    },
+    {
+        question: "¿Cuál es el órgano encargado de filtrar los desechos en el cuerpo humano?",
+        hint: "Este órgano está relacionado con la eliminación de productos de desecho y la regulación de líquidos.",
+        options: ["El corazón", "Los riñones", "El hígado", "Los pulmones"],
+        answer: "Los riñones"
+    },
+    {
+        question: "¿Qué es una célula?",
+        hint: "Es la unidad estructural y funcional de los seres vivos.",
+        options: ["Una molécula", "Una estructura microscópica", "Un tipo de tejido", "Un órgano de los animales"],
+        answer: "Una estructura microscópica"
+    },
+    {
+        question: "¿Qué tipo de energía se obtiene de los alimentos?",
+        hint: "Los seres humanos convierten este tipo de energía para realizar actividades físicas.",
+        options: ["Energía cinética", "Energía térmica", "Energía potencial", "Energía química"],
+        answer: "Energía química"
+    },
+    {
+        question: "¿Qué tipo de células tienen los seres vivos?",
+        hint: "Los organismos pueden ser unicelulares o multicelulares, pero todas sus células comparten esta característica.",
+        options: ["Procariontes y eucariontes", "Vegetales y animales", "Unicelulares y multicelulares", "Todas las anteriores"],
+        answer: "Procariontes y eucariontes"
+    },
+    {
+        question: "¿Qué es un virus?",
+        hint: "Este agente patógeno es incapaz de realizar funciones metabólicas fuera de una célula huésped.",
+        options: ["Un organismo unicelular", "Un patógeno que puede provocar enfermedades", "Una bacteria", "Una célula anormal"],
+        answer: "Un patógeno que puede provocar enfermedades"
+    },
+    {
+        question: "¿Qué es un compuesto?",
+        hint: "Es una sustancia formada por dos o más elementos químicos diferentes.",
+        options: ["Un elemento puro", "Una mezcla de sustancias", "Una sustancia formada por moléculas de un solo tipo", "Una sustancia formada por átomos de diferentes elementos"],
+        answer: "Una sustancia formada por átomos de diferentes elementos"
+    },
+    {
+        question: "¿Cuál es el órgano responsable de la coordinación de los movimientos?",
+        hint: "Este órgano se encarga de procesar la información recibida por los sentidos y coordinar las respuestas motoras.",
+        options: ["La médula espinal", "El cerebro", "El corazón", "Los pulmones"],
+        answer: "El cerebro"
+    },
+    {
+        question: "¿Qué es la teoría celular?",
+        hint: "Esta teoría establece que todos los organismos están compuestos por células.",
+        options: ["Una teoría de la evolución", "Una teoría que describe la estructura de las moléculas", "Una teoría que afirma que las células son la unidad básica de los seres vivos", "Una teoría que estudia la genética"],
+        answer: "Una teoría que afirma que las células son la unidad básica de los seres vivos"
+    },
+    {
+        question: "¿Qué se produce en una reacción de oxidación?",
+        hint: "Este tipo de reacción ocurre cuando una sustancia pierde electrones.",
+        options: ["El agua", "El calor", "El oxígeno", "El dióxido de carbono"],
+        answer: "El oxígeno"
+    },
+    {
+        question: "¿Qué tipo de energía utiliza un coche para moverse?",
+        hint: "Este tipo de energía se utiliza en los motores de combustión interna.",
+        options: ["Energía térmica", "Energía química", "Energía eléctrica", "Energía nuclear"],
+        answer: "Energía química"
+    },
+    {
+        question: "¿Qué es la mitosis?",
+        hint: "Es el proceso de división celular que da como resultado dos células hijas genéticamente idénticas.",
+        options: ["Un tipo de reproducción sexual", "Una división de células sexuales", "Una división celular en células somáticas", "El proceso de formación de nuevas moléculas"],
+        answer: "Una división celular en células somáticas"
+    },
+    {
+        question: "¿Qué causa el cambio climático?",
+        hint: "Este fenómeno se debe al aumento de gases de efecto invernadero en la atmósfera.",
+        options: ["La contaminación del agua", "La deforestación", "El aumento de gases de efecto invernadero", "El uso de plásticos"],
+        answer: "El aumento de gases de efecto invernadero"
+    },
+    {
+        question: "¿Qué es la ley de la conservación de la masa?",
+        hint: "Esta ley establece que la masa total en un sistema cerrado no cambia durante una reacción química.",
+        options: ["La masa no puede ser destruida ni creada, solo transformada", "La masa de un sistema puede cambiar en cualquier tipo de reacción", "La masa de los átomos siempre se mantiene constante", "La masa de los objetos disminuye con el tiempo"],
+        answer: "La masa no puede ser destruida ni creada, solo transformada"
+    },
+    {
+        question: "¿Qué es la energía cinética?",
+        hint: "Es la energía que tiene un objeto debido a su movimiento.",
+        options: ["La energía almacenada en un objeto", "La energía de un objeto en movimiento", "La energía térmica de un objeto", "La energía de la luz"],
+        answer: "La energía de un objeto en movimiento"
+    },
+    {
+        question: "¿Qué es un soluto?",
+        hint: "Es una sustancia que se disuelve en un solvente para formar una solución.",
+        options: ["Un líquido", "Una sustancia que se disuelve", "Un gas", "Un tipo de solución"],
+        answer: "Una sustancia que se disuelve"
+    },
+    {
+        question: "¿Qué son los gases nobles?",
+        hint: "Estos gases son incoloros, inodoros y tienen una baja reactividad química.",
+        options: ["Oxígeno, nitrógeno y helio", "Helio, argón, neón", "Dióxido de carbono, oxígeno", "Aire y nitrógeno"],
+        answer: "Helio, argón, neón"
+    },
+    {
+        question: "¿Cuál es el gas más abundante en la atmósfera terrestre?",
+        hint: "Este gas representa aproximadamente el 78% del aire que respiramos.",
+        options: ["Oxígeno", "Nitrógeno", "Argón", "Dióxido de carbono"],
+        answer: "Nitrógeno"
+    },
+    {
+        question: "¿Qué es el sistema nervioso?",
+        hint: "Este sistema controla las funciones del cuerpo y permite la comunicación entre diferentes partes del organismo.",
+        options: ["El sistema que regula la respiración", "El sistema que coordina los movimientos musculares", "El sistema que detecta estímulos y coordina las respuestas del cuerpo", "El sistema que produce las hormonas"],
+        answer: "El sistema que detecta estímulos y coordina las respuestas del cuerpo"
+    }
+];
+
+
+        function loadQuestion() {
+            const question = questions[currentQuestionIndex];
+            document.getElementById('question-text').textContent = question.question;
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.classList.add('option');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            const question = questions[currentQuestionIndex];
+            const result = document.getElementById('result');
+            if (selectedOption === question.answer) {
+                result.textContent = "¡Correcto! 🎉";
+                result.style.color = 'green';
+                score++;
+                document.getElementById('score').textContent = `Puntaje: ${score}`;
+            } else {
+                result.textContent = "¡Incorrecto! ❌";
+                result.style.color = 'red';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+                document.getElementById('result').textContent = '';
+            } else {
+                document.getElementById('result').textContent = `¡Felicidades! Has terminado el reto. Puntaje final: ${score}`;
+                document.getElementById('next').style.display = 'none';
+            }
+        }
+
+        // Cargar la primera pregunta al cargar la página
+        loadQuestion();
+    </script>
+</body>
+</html>
