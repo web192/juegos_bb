@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego del Ahorcado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    #game-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      width: 90%;
+      max-width: 800px;
+      justify-content: center;
+    }
+
+    #hangman {
+      width: 200px;
+      height: 300px;
+      border-left: 5px solid black;
+      border-top: 5px solid black;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .hangman-part {
+      display: none;
+      position: absolute;
+      background-color: black;
+    }
+
+    #head {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #body {
+      width: 10px;
+      height: 80px;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #left-arm {
+      width: 50px;
+      height: 10px;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+
+    #right-arm {
+      width: 50px;
+      height: 10px;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    #left-leg {
+      width: 50px;
+      height: 10px;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+
+    #right-leg {
+      width: 50px;
+      height: 10px;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    #word-display {
+      font-size: 30px;
+      letter-spacing: 10px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+
+    #attempts {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #555;
+    }
+
+    #message {
+      font-size: 20px;
+      color: red;
+      margin-top: 10px;
+    }
+
+    #input-container {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    #input-container input {
+      width: 60px;
+      height: 60px;
+      font-size: 36px;
+      text-align: center;
+      margin: 10px;
+      border: 2px solid #333;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    #hint {
+      font-size: 20px;
+      font-style: italic;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    #reset-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #reset-btn:hover {
+      background-color: #45a049;
+    }
+
+    @media screen and (max-width: 600px) {
+      #game-container {
+        flex-direction: column;
+      }
+
+      #hangman {
+        width: 150px;
+        height: 230px;
+      }
+
+      #word-display {
+        font-size: 24px;
+      }
+
+      #input-container input {
+        width: 50px;
+        height: 50px;
+        font-size: 30px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Juego del Ahorcado</h1>
+  <div id="game-container">
+    <div id="hangman">
+      <div id="head" class="hangman-part"></div>
+      <div id="body" class="hangman-part"></div>
+      <div id="left-arm" class="hangman-part"></div>
+      <div id="right-arm" class="hangman-part"></div>
+      <div id="left-leg" class="hangman-part"></div>
+      <div id="right-leg" class="hangman-part"></div>
+    </div>
+    <div>
+      <div id="word-display">_ _ _ _ _</div>
+      <div id="hint"></div>
+      <div id="attempts">Intentos restantes: 6</div>
+      <div id="message"></div>
+      <div id="input-container">
+        <input type="text" id="letter-input" maxlength="1" autofocus>
+      </div>
+      <button id="reset-btn" onclick="startGame()">Reiniciar Juego</button>
+    </div>
+  </div>
+
+  <script>
+    const wordsWithHints = [
+      { word: "perro", hint: "Es un animal doméstico conocido como el mejor amigo del hombre." },
+      { word: "gato", hint: "Es un animal felino que a menudo se tiene como mascota." },
+      { word: "elefante", hint: "Es un mamífero grande con orejas grandes y trompa." },
+      { word: "leon", hint: "Es conocido como el rey de la selva." },
+      { word: "jirafa", hint: "Es el animal terrestre más alto del mundo." },
+      { word: "cocodrilo", hint: "Es un reptil que vive en aguas cálidas y tiene una gran boca." },
+      { word: "zorro", hint: "Es un animal salvaje con pelaje rojizo y cola peluda." },
+      { word: "vaca", hint: "Es un animal de granja que produce leche." },
+      { word: "oveja", hint: "Es un animal que produce lana y es común en las granjas." },
+      { word: "mono", hint: "Es un primate que vive en los árboles y tiene una cola larga." },
+      { word: "pizza", hint: "Es un plato italiano que se hace con masa, tomate, queso y otros ingredientes." },
+      { word: "hamburguesa", hint: "Es un tipo de sándwich con carne molida entre dos panes." },
+      { word: "sandwich", hint: "Es un bocadillo hecho con pan y relleno de varios ingredientes." },
+      { word: "ensalada", hint: "Es un platillo fresco, usualmente compuesto de verduras." },
+      { word: "pasta", hint: "Es una comida italiana que incluye fideos, comúnmente servida con salsa." },
+      { word: "sopa", hint: "Es un plato líquido que se sirve caliente y contiene diferentes ingredientes." },
+      { word: "tacos", hint: "Es un platillo tradicional mexicano, hecho con tortillas y relleno de carne u otros ingredientes." },
+      { word: "chocolate", hint: "Es un dulce hecho de cacao, muy popular como postre." },
+      { word: "helado", hint: "Es un postre frío, cremoso, comúnmente servido en verano." },
+      { word: "queso", hint: "Es un producto lácteo obtenido a partir de la cuajada de la leche." },
+      { word: "paris", hint: "Es la capital de Francia, famosa por la Torre Eiffel." },
+      { word: "londres", hint: "Es la capital del Reino Unido, famosa por el Big Ben." },
+      { word: "tokio", hint: "Es la capital de Japón, conocida por su tecnología avanzada." },
+      { word: "madrid", hint: "Es la capital de España, famosa por su arte y cultura." },
+      { word: "berlin", hint: "Es la capital de Alemania, conocida por su historia." }
+    ];
+
+    let selectedWordObj = {};
+    let selectedWord = "";
+    let attempts = 6;
+    let guessedLetters = [];
+    let displayedWord = [];
+
+    const wordDisplay = document.getElementById("word-display");
+    const message = document.getElementById("message");
+    const attemptsDisplay = document.getElementById("attempts");
+    const hangmanParts = document.querySelectorAll(".hangman-part");
+    const hintDisplay = document.getElementById("hint");
+    const letterInput = document.getElementById("letter-input");
+
+    function startGame() {
+      const randomIndex = Math.floor(Math.random() * wordsWithHints.length);
+      selectedWordObj = wordsWithHints[randomIndex];
+      selectedWord = selectedWordObj.word.toLowerCase();
+      guessedLetters = [];
+      attempts = 6;
+      displayedWord = Array(selectedWord.length).fill("_");
+
+      wordDisplay.textContent = displayedWord.join(" ");
+      hintDisplay.textContent = `Pista: ${selectedWordObj.hint}`;
+      attemptsDisplay.textContent = `Intentos restantes: ${attempts}`;
+      message.textContent = "";
+
+      hangmanParts.forEach(part => (part.style.display = "none"));
+    }
+
+    function handleKeyPress(event) {
+      const letter = event.key.toLowerCase();
+
+      if (/^[a-z]$/.test(letter)) {
+        if (guessedLetters.includes(letter)) {
+          return; // No permitir adivinar la misma letra
+        }
+
+        guessedLetters.push(letter);
+        letterInput.value = "";
+
+        if (selectedWord.includes(letter)) {
+          for (let i = 0; i < selectedWord.length; i++) {
+            if (selectedWord[i] === letter) {
+              displayedWord[i] = letter;
+            }
+          }
+          wordDisplay.textContent = displayedWord.join(" ");
+          checkWin();
+        } else {
+          attempts--;
+          hangmanParts[6 - attempts].style.display = "block";
+          attemptsDisplay.textContent = `Intentos restantes: ${attempts}`;
+          checkLose();
+        }
+      }
+    }
+
+    function checkWin() {
+      if (!displayedWord.includes("_")) {
+        message.textContent = "¡Ganaste! 🎉";
+        disableInput();
+      }
+    }
+
+    function checkLose() {
+      if (attempts === 0) {
+        message.textContent = `¡Perdiste! La palabra era: ${selectedWord}`;
+        disableInput();
+      }
+    }
+
+    function disableInput() {
+      document.removeEventListener("keydown", handleKeyPress);
+    }
+
+    startGame();
+    document.addEventListener("keydown", handleKeyPress);
+  </script>
+</body>
+</html>
