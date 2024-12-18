@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Juego de Aprender Inglés</title>
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: #333;
+    }
+
+    .game-container {
+      text-align: center;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 500px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #4CAF50;
+    }
+
+    .question {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .option {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      width: 200px;
+      transition: background-color 0.3s;
+    }
+
+    .option:hover {
+      background-color: #45a049;
+    }
+
+    .result {
+      font-size: 20px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .score {
+      font-size: 22px;
+      margin-top: 10px;
+      color: #FF5722;
+    }
+
+    .btn {
+      background-color: #FF5722;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .btn:hover {
+      background-color: #f44336;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Juego de Aprender Inglés</h1>
+    <div class="question-container">
+      <p class="question">¿Cómo se dice "perro" en inglés?</p>
+      <button class="option" onclick="checkAnswer('dog')">Cat</button>
+      <button class="option" onclick="checkAnswer('dog')">Dog</button>
+      <button class="option" onclick="checkAnswer('dog')">Rabbit</button>
+      <button class="option" onclick="checkAnswer('dog')">Horse</button>
+    </div>
+    <div class="result"></div>
+    <div class="score"></div>
+    <button class="btn" onclick="nextQuestion()">Siguiente Pregunta</button>
+  </div>
+
+  <script>
+    // Preguntas y Respuestas
+    const questions = [
+      { question: "¿Cómo se dice 'perro' en inglés?", correctAnswer: "dog", options: ["Cat", "Dog", "Rabbit", "Horse"] },
+      { question: "¿Cómo se dice 'gato' en inglés?", correctAnswer: "cat", options: ["Cat", "Dog", "Horse", "Fish"] },
+      { question: "¿Cómo se dice 'casa' en inglés?", correctAnswer: "house", options: ["Home", "House", "Apartment", "Room"] },
+      { question: "¿Cómo se dice 'feliz' en inglés?", correctAnswer: "happy", options: ["Sad", "Angry", "Happy", "Tired"] },
+      { question: "¿Cómo se dice 'agua' en inglés?", correctAnswer: "water", options: ["Water", "Milk", "Juice", "Tea"] }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    // Mostrar pregunta y opciones
+    function loadQuestion() {
+      const questionContainer = document.querySelector('.question');
+      const optionButtons = document.querySelectorAll('.option');
+
+      const currentQ = questions[currentQuestion];
+      questionContainer.textContent = currentQ.question;
+      optionButtons.forEach((button, index) => {
+        button.textContent = currentQ.options[index];
+      });
+
+      document.querySelector('.result').textContent = '';
+    }
+
+    // Verificar respuesta
+    function checkAnswer(answer) {
+      const currentQ = questions[currentQuestion];
+      const resultContainer = document.querySelector('.result');
+      
+      if (answer === currentQ.correctAnswer) {
+        score++;
+        resultContainer.textContent = "¡Correcto!";
+        resultContainer.style.color = "#4CAF50";
+      } else {
+        resultContainer.textContent = "¡Incorrecto!";
+        resultContainer.style.color = "#FF5722";
+      }
+
+      document.querySelector('.score').textContent = `Puntaje: ${score}`;
+    }
+
+    // Siguiente pregunta
+    function nextQuestion() {
+      currentQuestion++;
+      
+      if (currentQuestion >= questions.length) {
+        currentQuestion = 0;
+        alert(`Juego terminado. Tu puntaje final es: ${score}`);
+        score = 0;
+        document.querySelector('.score').textContent = `Puntaje: ${score}`;
+      }
+
+      loadQuestion();
+    }
+
+    // Cargar primera pregunta
+    loadQuestion();
+  </script>
+</body>
+</html>
