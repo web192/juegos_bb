@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f7f9fc;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,37 +17,55 @@
 
         #game {
             text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 320px;
         }
 
         .emoji {
-            font-size: 50px;
+            font-size: 60px;
+            margin-bottom: 10px;
         }
 
         #problem {
-            font-size: 24px;
+            font-size: 22px;
             margin: 20px 0;
+            color: #333;
         }
 
         input {
-            padding: 10px;
+            padding: 12px;
             font-size: 18px;
-            width: 100px;
-            margin-right: 10px;
+            width: 120px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
         }
 
         button {
-            padding: 10px;
+            padding: 12px 20px;
             font-size: 18px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
         }
 
         #result {
-            margin-top: 20px;
+            margin-top: 15px;
             font-size: 20px;
             font-weight: bold;
         }
@@ -55,15 +73,16 @@
         #score {
             font-size: 18px;
             margin-top: 10px;
+            color: #555;
         }
     </style>
 </head>
 <body>
     <div id="game">
         <h1>¡Resuelve los problemas matemáticos!</h1>
-        <div id="emoji" class="emoji">😃</div>
+        <div id="emoji" class="emoji">🧮</div>
         <div id="problem"></div>
-        <input type="number" id="answer" placeholder="Escribe tu respuesta">
+        <input type="number" id="answer" placeholder="Tu respuesta">
         <button onclick="checkAnswer()">Comprobar</button>
         <div id="result"></div>
         <div id="score">Problemas Resueltos: 0</div>
@@ -76,22 +95,16 @@
 
         const problems = [];
 
-        // Generar 300 problemas
+        // Generar problemas matemáticos
         function generateProblems() {
             for (let i = 0; i < 300; i++) {
                 const num1 = Math.floor(Math.random() * 20) + 1;
                 const num2 = Math.floor(Math.random() * 20) + 1;
                 const operator = Math.random() > 0.5 ? '+' : '-';
-                let answer;
-                let problemText;
-
-                if (operator === '+') {
-                    problemText = `¿Cuánto es ${num1} + ${num2}?`;
-                    answer = num1 + num2;
-                } else {
-                    problemText = `¿Cuánto es ${num1} - ${num2}?`;
-                    answer = num1 - num2;
-                }
+                const problemText = operator === '+' 
+                    ? `¿Cuánto es ${num1} + ${num2}?` 
+                    : `¿Cuánto es ${num1} - ${num2}?`;
+                const answer = operator === '+' ? num1 + num2 : num1 - num2;
 
                 problems.push({ problemText, answer });
             }
@@ -101,37 +114,60 @@
         function startGame() {
             generateProblems();
             loadProblem();
+
+            // Permitir enviar con la tecla Enter
+            document.getElementById('answer').addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
         }
 
-        // Cargar un problema aleatorio
+        // Cargar un nuevo problema aleatorio
         function loadProblem() {
             if (problems.length === 0) {
                 document.getElementById('problem').textContent = "¡Felicidades! Has resuelto todos los problemas.";
                 document.getElementById('result').textContent = "";
                 return;
             }
+
             const randomIndex = Math.floor(Math.random() * problems.length);
-            currentProblem = problems[randomIndex].problemText;
-            currentAnswer = problems[randomIndex].answer;
+            const problem = problems[randomIndex];
+            currentProblem = problem.problemText;
+            currentAnswer = problem.answer;
+
             document.getElementById('problem').textContent = currentProblem;
         }
 
-        // Comprobar respuesta
+        // Comprobar la respuesta del usuario
         function checkAnswer() {
-            const userAnswer = parseInt(document.getElementById('answer').value);
+            const userAnswer = document.getElementById('answer').value.trim();
             const result = document.getElementById('result');
+            const answerField = document.getElementById('answer');
 
-            if (userAnswer === currentAnswer) {
-                result.textContent = '¡Correcto! 🎉';
-                result.style.color = 'green';
+            if (userAnswer === "") {
+                result.textContent = "Escribe una respuesta. 😅";
+                result.style.color = "orange";
+                return;
+            }
+
+            if (parseInt(userAnswer) === currentAnswer) {
+                result.textContent = "¡Correcto! 🎉";
+                result.style.color = "green";
                 score++;
                 document.getElementById('score').textContent = `Problemas Resueltos: ${score}`;
-                problems.splice(problems.indexOf(problems.find(p => p.answer === currentAnswer && p.problemText === currentProblem)), 1);
+                
+                // Eliminar el problema resuelto y cargar uno nuevo
+                problems.splice(problems.indexOf(problems.find(p => p.problemText === currentProblem)), 1);
                 loadProblem();
             } else {
-                result.textContent = 'Intenta de nuevo. ❌';
-                result.style.color = 'red';
+                result.textContent = "Intenta de nuevo. ❌";
+                result.style.color = "red";
             }
+
+            // Limpiar el campo de entrada para el siguiente intento
+            answerField.value = "";
+            answerField.focus();
         }
 
         // Iniciar el juego al cargar la página
@@ -139,3 +175,4 @@
     </script>
 </body>
 </html>
+
